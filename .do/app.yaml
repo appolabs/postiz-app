@@ -1,0 +1,77 @@
+name: postiz
+region: nyc
+
+databases:
+  - engine: PG
+    name: db
+    version: "16"
+    production: true  # Dev DB can't CREATEDB; Temporal needs 3 databases
+
+services:
+  - name: postiz
+    github:
+      repo: appolabs/postiz-app
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile.dev
+    http_port: 5000
+    instance_size_slug: apps-s-1vcpu-2gb
+    instance_count: 1
+    health_check:
+      http_path: /
+      initial_delay_seconds: 120
+      period_seconds: 10
+      timeout_seconds: 5
+      failure_threshold: 6
+    envs:
+      # --- App URLs ---
+      - key: MAIN_URL
+        value: "${APP_URL}"
+      - key: FRONTEND_URL
+        value: "${APP_URL}"
+      - key: NEXT_PUBLIC_BACKEND_URL
+        value: "${APP_URL}/api"
+        scope: BUILD_TIME
+      # --- Postiz Database ---
+      - key: DATABASE_URL
+        value: "${db.DATABASE_URL}"
+      # --- Temporal (embedded) ---
+      - key: TEMPORAL_ADDRESS
+        value: "localhost:7233"
+      - key: TEMPORAL_EMBEDDED
+        value: "true"
+      # --- Temporal PostgreSQL (consumed by auto-setup.sh) ---
+      - key: DB
+        value: "postgres12"
+      - key: DB_PORT
+        value: "${db.PORT}"
+      - key: POSTGRES_SEEDS
+        value: "${db.HOSTNAME}"
+      - key: POSTGRES_USER
+        value: "${db.USERNAME}"
+      - key: POSTGRES_PWD
+        value: "${db.PASSWORD}"
+        type: SECRET
+      - key: POSTGRES_TLS_ENABLED
+        value: "true"
+      - key: POSTGRES_TLS_DISABLE_HOST_VERIFICATION
+        value: "true"
+      - key: ENABLE_ES
+        value: "false"
+      # --- Auth ---
+      - key: JWT_SECRET
+        value: "CHANGE_ME"
+        type: SECRET
+      # --- App Config ---
+      - key: IS_GENERAL
+        value: "true"
+      - key: BACKEND_INTERNAL_URL
+        value: "http://localhost:3000"
+      - key: STORAGE_PROVIDER
+        value: "local"
+      - key: UPLOAD_DIRECTORY
+        value: "/uploads"
+      - key: NEXT_PUBLIC_UPLOAD_DIRECTORY
+        value: "/uploads"
+      - key: NX_ADD_PLUGINS
+        value: "false"
