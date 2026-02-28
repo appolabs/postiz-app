@@ -24,7 +24,7 @@ services:
       timeout_seconds: 5
       failure_threshold: 6
     envs:
-      # --- App URLs ---
+      # --- App URLs (DO bindings) ---
       - key: MAIN_URL
         value: "${APP_URL}"
       - key: FRONTEND_URL
@@ -32,17 +32,15 @@ services:
       - key: NEXT_PUBLIC_BACKEND_URL
         value: "${APP_URL}/api"
         scope: BUILD_TIME
-      # --- Postiz Database ---
+      # --- Database (DO managed PG binding) ---
       - key: DATABASE_URL
         value: "${db.DATABASE_URL}"
-      # --- Temporal (embedded) ---
-      - key: TEMPORAL_ADDRESS
-        value: "localhost:7233"
+      # --- Temporal (embedded mode) ---
       - key: TEMPORAL_EMBEDDED
         value: "true"
-      # --- Temporal PostgreSQL (consumed by auto-setup.sh) ---
-      - key: DB
-        value: "postgres12"
+      - key: TEMPORAL_ADDRESS
+        value: "localhost:7233"
+      # --- Temporal auto-setup (DO managed PG bindings) ---
       - key: DB_PORT
         value: "${db.PORT}"
       - key: POSTGRES_SEEDS
@@ -52,26 +50,3 @@ services:
       - key: POSTGRES_PWD
         value: "${db.PASSWORD}"
         type: SECRET
-      - key: POSTGRES_TLS_ENABLED
-        value: "true"
-      - key: POSTGRES_TLS_DISABLE_HOST_VERIFICATION
-        value: "true"
-      - key: ENABLE_ES
-        value: "false"
-      # --- Auth ---
-      - key: JWT_SECRET
-        value: "CHANGE_ME"
-        type: SECRET
-      # --- App Config ---
-      - key: IS_GENERAL
-        value: "true"
-      - key: BACKEND_INTERNAL_URL
-        value: "http://localhost:3000"
-      - key: STORAGE_PROVIDER
-        value: "local"
-      - key: UPLOAD_DIRECTORY
-        value: "/uploads"
-      - key: NEXT_PUBLIC_UPLOAD_DIRECTORY
-        value: "/uploads"
-      - key: NX_ADD_PLUGINS
-        value: "false"
