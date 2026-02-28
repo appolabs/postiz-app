@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { useCallback } from 'react';
 import { SelectCustomer } from '@gitroom/frontend/components/launches/select.customer';
+import { SelectPlatform } from '@gitroom/frontend/components/launches/select.platform';
 import { useT } from '@gitroom/react/translation/get.transation.service.client';
 import i18next from 'i18next';
 import { newDayjs } from '@gitroom/frontend/components/layout/set.timezone';
@@ -84,6 +85,7 @@ export const Filters = () => {
       endDate: currentRange.endDate,
       display: calendar.display as 'day' | 'week' | 'month',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -102,6 +104,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: 'day',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -120,6 +123,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: 'week',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -138,6 +142,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: 'month',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -152,6 +157,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: 'list',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -166,6 +172,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: 'week',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -179,6 +186,20 @@ export const Filters = () => {
         endDate: calendar.endDate,
         display: calendar.display as 'day' | 'week' | 'month',
         customer: customer,
+        platform: calendar.platform,
+      });
+    },
+    [calendar]
+  );
+
+  const setPlatform = useCallback(
+    (platform: string) => {
+      calendar.setFilters({
+        startDate: calendar.startDate,
+        endDate: calendar.endDate,
+        display: calendar.display as 'day' | 'week' | 'month' | 'list',
+        customer: calendar.customer,
+        platform: platform || null,
       });
     },
     [calendar]
@@ -211,6 +232,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: calendar.display as 'day' | 'week' | 'month',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -241,6 +263,7 @@ export const Filters = () => {
       endDate: range.endDate,
       display: calendar.display as 'day' | 'week' | 'month',
       customer: calendar.customer,
+      platform: calendar.platform,
     });
   }, [calendar]);
 
@@ -399,6 +422,11 @@ export const Filters = () => {
       <SelectCustomer
         customer={calendar.customer as string}
         onChange={(customer: string) => setCustomer(customer)}
+        integrations={calendar.integrations}
+      />
+      <SelectPlatform
+        platform={calendar.platform as string}
+        onChange={(platform: string) => setPlatform(platform)}
         integrations={calendar.integrations}
       />
       {!isListView && (
