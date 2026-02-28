@@ -2,7 +2,7 @@ import { AgentToolInterface } from '@gitroom/nestjs-libraries/chat/agent.tool.in
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { Injectable } from '@nestjs/common';
-import { socialIntegrationList } from '@gitroom/nestjs-libraries/integrations/integration.manager';
+import { getProviders } from '@gitroom/nestjs-libraries/integrations/integration.manager';
 import { IntegrationService } from '@gitroom/nestjs-libraries/database/prisma/integrations/integration.service';
 import { PostsService } from '@gitroom/nestjs-libraries/database/prisma/posts/posts.service';
 import { makeId } from '@gitroom/nestjs-libraries/services/make.is';
@@ -131,7 +131,7 @@ If the tools return errors, you would need to rerun it with the right parameters
               platform.integrationId
             );
 
-          const { dto, maxLength, identifier } = socialIntegrationList.find(
+          const { dto, maxLength, identifier } = getProviders().find(
             (p) =>
               p.identifier ===
               integrations[platform.integrationId].providerIdentifier

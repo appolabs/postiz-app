@@ -1,5 +1,5 @@
 import { TemporalModule } from 'nestjs-temporal-core';
-import { socialIntegrationList } from '@gitroom/nestjs-libraries/integrations/integration.manager';
+import { getProviders } from '@gitroom/nestjs-libraries/integrations/integration.manager';
 
 export const getTemporalModule = (
   isWorkers: boolean,
@@ -20,7 +20,7 @@ export const getTemporalModule = (
       ? {
           workers: [
             { identifier: 'main', maxConcurrentJob: undefined },
-            ...socialIntegrationList,
+            ...getProviders(),
           ]
             .filter((f) => f.identifier.indexOf('-') === -1)
             .map((integration) => ({

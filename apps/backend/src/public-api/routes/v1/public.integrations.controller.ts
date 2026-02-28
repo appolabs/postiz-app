@@ -34,7 +34,7 @@ import axios from 'axios';
 import { Readable } from 'stream';
 import { lookup, extension } from 'mime-types';
 import * as Sentry from '@sentry/nestjs';
-import { socialIntegrationList, IntegrationManager } from '@gitroom/nestjs-libraries/integrations/integration.manager';
+import { getProviders, IntegrationManager } from '@gitroom/nestjs-libraries/integrations/integration.manager';
 import { getValidationSchemas } from '@gitroom/nestjs-libraries/chat/validation.schemas.helper';
 import { RefreshIntegrationService } from '@gitroom/nestjs-libraries/integrations/refresh.integration.service';
 import { RefreshToken } from '@gitroom/nestjs-libraries/integrations/social.abstract';
@@ -242,7 +242,7 @@ export class PublicIntegrationsController {
         (p: any) => p?.title === 'Verified'
       )?.value || false;
 
-    const integration = socialIntegrationList.find(
+    const integration = getProviders().find(
       (p) => p.identifier === loadIntegration.providerIdentifier
     )!;
 
@@ -324,7 +324,7 @@ export class PublicIntegrationsController {
       throw new HttpException({ msg: 'Integration not found' }, 404);
     }
 
-    const integrationProvider = socialIntegrationList.find(
+    const integrationProvider = getProviders().find(
       (p) => p.identifier === getIntegration.providerIdentifier
     )!;
 

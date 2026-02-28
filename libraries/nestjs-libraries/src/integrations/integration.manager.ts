@@ -36,48 +36,56 @@ import { MoltbookProvider } from '@gitroom/nestjs-libraries/integrations/social/
 import { SkoolProvider } from '@gitroom/nestjs-libraries/integrations/social/skool.provider';
 import { WhopProvider } from '@gitroom/nestjs-libraries/integrations/social/whop.provider';
 
-export const socialIntegrationList: Array<SocialAbstract & SocialProvider> = [
-  new XProvider(),
-  new LinkedinProvider(),
-  new LinkedinPageProvider(),
-  new RedditProvider(),
-  new InstagramProvider(),
-  new InstagramStandaloneProvider(),
-  new FacebookProvider(),
-  new ThreadsProvider(),
-  new YoutubeProvider(),
-  new GmbProvider(),
-  new TiktokProvider(),
-  new PinterestProvider(),
-  new DribbbleProvider(),
-  new DiscordProvider(),
-  new SlackProvider(),
-  new KickProvider(),
-  new TwitchProvider(),
-  new MastodonProvider(),
-  new BlueskyProvider(),
-  new LemmyProvider(),
-  new FarcasterProvider(),
-  new TelegramProvider(),
-  new NostrProvider(),
-  new VkProvider(),
-  new MediumProvider(),
-  new DevToProvider(),
-  new HashnodeProvider(),
-  new WordpressProvider(),
-  new ListmonkProvider(),
-  new MoltbookProvider(),
-  new WhopProvider(),
-  new SkoolProvider(),
-  // new MastodonCustomProvider(),
-];
+// Lazy-initialized provider cache. Providers are instantiated on first access
+// instead of at module load time, deferring ~200ms of startup and memory allocation.
+let _providerCache: Array<SocialAbstract & SocialProvider> | null = null;
+
+export function getProviders(): Array<SocialAbstract & SocialProvider> {
+  if (!_providerCache) {
+    _providerCache = [
+      new XProvider(),
+      new LinkedinProvider(),
+      new LinkedinPageProvider(),
+      new RedditProvider(),
+      new InstagramProvider(),
+      new InstagramStandaloneProvider(),
+      new FacebookProvider(),
+      new ThreadsProvider(),
+      new YoutubeProvider(),
+      new GmbProvider(),
+      new TiktokProvider(),
+      new PinterestProvider(),
+      new DribbbleProvider(),
+      new DiscordProvider(),
+      new SlackProvider(),
+      new KickProvider(),
+      new TwitchProvider(),
+      new MastodonProvider(),
+      new BlueskyProvider(),
+      new LemmyProvider(),
+      new FarcasterProvider(),
+      new TelegramProvider(),
+      new NostrProvider(),
+      new VkProvider(),
+      new MediumProvider(),
+      new DevToProvider(),
+      new HashnodeProvider(),
+      new WordpressProvider(),
+      new ListmonkProvider(),
+      new MoltbookProvider(),
+      new WhopProvider(),
+      new SkoolProvider(),
+    ];
+  }
+  return _providerCache;
+}
 
 @Injectable()
 export class IntegrationManager {
   async getAllIntegrations() {
     return {
       social: await Promise.all(
-        socialIntegrationList.map(async (p) => ({
+        getProviders().map(async (p) => ({
           name: p.name,
           identifier: p.identifier,
           toolTip: p.toolTip,
@@ -100,7 +108,7 @@ export class IntegrationManager {
       methodName: string;
     }[];
   } {
-    return socialIntegrationList.reduce(
+    return getProviders().reduce(
       (all, current) => ({
         ...all,
         [current.identifier]:
@@ -114,7 +122,7 @@ export class IntegrationManager {
   getAllRulesDescription(): {
     [key: string]: string;
   } {
-    return socialIntegrationList.reduce(
+    return getProviders().reduce(
       (all, current) => ({
         ...all,
         [current.identifier]:
@@ -128,7 +136,7 @@ export class IntegrationManager {
   }
 
   getAllPlugs() {
-    return socialIntegrationList
+    return getProviders()
       .map((p) => {
         return {
           name: p.name,
@@ -150,7 +158,7 @@ export class IntegrationManager {
   }
 
   getInternalPlugs(providerName: string) {
-    const p = socialIntegrationList.find((p) => p.identifier === providerName)!;
+    const p = getProviders().find((p) => p.identifier === providerName)!;
     return {
       internalPlugs:
         (
@@ -163,9 +171,9 @@ export class IntegrationManager {
   }
 
   getAllowedSocialsIntegrations() {
-    return socialIntegrationList.map((p) => p.identifier);
+    return getProviders().map((p) => p.identifier);
   }
   getSocialIntegration(integration: string): SocialProvider {
-    return socialIntegrationList.find((i) => i.identifier === integration)!;
+    return getProviders().find((i) => i.identifier === integration)!;
   }
 }

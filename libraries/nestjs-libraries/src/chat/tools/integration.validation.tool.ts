@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Injectable } from '@nestjs/common';
 import {
   IntegrationManager,
-  socialIntegrationList,
+  getProviders,
 } from '@gitroom/nestjs-libraries/integrations/integration.manager';
 import { getValidationSchemas } from '@gitroom/nestjs-libraries/chat/validation.schemas.helper';
 import { checkAuth } from '@gitroom/nestjs-libraries/chat/auth.context';
@@ -29,7 +29,7 @@ export class IntegrationValidationTool implements AgentToolInterface {
         platform: z
           .string()
           .describe(
-            `platform identifier (${socialIntegrationList
+            `platform identifier (${getProviders()
               .map((p) => p.identifier)
               .join(', ')})`
           ),
@@ -75,7 +75,7 @@ export class IntegrationValidationTool implements AgentToolInterface {
       execute: async (args, options) => {
         const { context, runtimeContext } = args;
         checkAuth(args, options);
-        const integration = socialIntegrationList.find(
+        const integration = getProviders().find(
           (p) => p.identifier === context.platform
         )!;
 

@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Injectable } from '@nestjs/common';
 import {
   IntegrationManager,
-  socialIntegrationList,
+  getProviders,
 } from '@gitroom/nestjs-libraries/integrations/integration.manager';
 import { IntegrationService } from '@gitroom/nestjs-libraries/database/prisma/integrations/integration.service';
 import { RefreshToken } from '@gitroom/nestjs-libraries/integrations/social.abstract';
@@ -64,7 +64,7 @@ export class IntegrationTriggerTool implements AgentToolInterface {
           };
         }
 
-        const integrationProvider = socialIntegrationList.find(
+        const integrationProvider = getProviders().find(
           (p) => p.identifier === getIntegration.providerIdentifier
         )!;
 
