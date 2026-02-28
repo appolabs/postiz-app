@@ -54,6 +54,8 @@ Recent decisions affecting current work:
 - 02-02: Used identifier field to deduplicate platforms (multiple integrations share same platform)
 - 02-02: Filter icon (funnel SVG) distinguishes platform filter from customer filter (user icon)
 - 02-02: Platform filter only renders when 2+ unique platforms exist
+- **Process: Always check for existing tests before plan execution. If tests exist, update/add tests for changes. Run test suite before committing.**
+- Process: No test files exist in project source as of 2026-02-28 (Jest config present but no specs). Re-check each phase.
 
 ### Pending Todos
 
