@@ -56,5 +56,8 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
 fi
 
 # --- Start Postiz ---
+# Cap Node heap per process (3 Node processes share RAM with Temporal)
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=384}"
+
 echo "[entrypoint] Starting nginx and Postiz..."
 nginx && pnpm run pm2
