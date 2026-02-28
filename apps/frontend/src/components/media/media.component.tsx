@@ -196,7 +196,7 @@ export const showMediaBox = (
   showModalEmitter.emit('show-modal', callback);
 };
 const CHUNK_SIZE = 1024 * 1024;
-const MAX_UPLOAD_SIZE = 1024 * 1024 * 1024; // 1 GB
+const MAX_UPLOAD_SIZE = 10 * 1024 * 1024 * 1024; // 10 GB
 export const MediaBox: FC<{
   setMedia: (params: { id: string; path: string }[]) => void;
   standalone?: boolean;
@@ -270,7 +270,7 @@ export const MediaBox: FC<{
         toaster.show(
           t(
             'upload_size_limit_exceeded',
-            'Upload size limit exceeded. Maximum 1 GB per upload session.'
+            'Upload size limit exceeded. Maximum 10 GB per upload session.'
           ),
           'warning'
         );
@@ -313,7 +313,7 @@ export const MediaBox: FC<{
         toaster.show(
           t(
             'upload_size_limit_exceeded',
-            'Upload size limit exceeded. Maximum 1 GB per upload session.'
+            'Upload size limit exceeded. Maximum 10 GB per upload session.'
           ),
           'warning'
         );
@@ -411,7 +411,7 @@ export const MediaBox: FC<{
             <div className="flex-1 text-[14px] font-[600] whitespace-pre-line">
               {t(
                 'select_or_upload_pictures_max_1gb',
-                'Select or upload pictures (maximum 1 GB per upload).'
+                'Select or upload pictures (maximum 10 GB per upload).'
               )}
               {'\n'}
               {t(
@@ -473,7 +473,7 @@ export const MediaBox: FC<{
                 <div className="whitespace-pre-line text-newTextColor/[0.6] text-center">
                   {t(
                     'select_or_upload_pictures_max_1gb',
-                    'Select or upload pictures (maximum 1 GB per upload).'
+                    'Select or upload pictures (maximum 10 GB per upload).'
                   )}{' '}
                   {'\n'}
                   {t(
