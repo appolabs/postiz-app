@@ -44,7 +44,7 @@ async function start() {
     },
   });
 
-  await startMcp(app);
+  startMcp(app);
 
   app.useGlobalPipes(
     new ValidationPipe({

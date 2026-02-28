@@ -33,6 +33,7 @@ import { ThirdPartyController } from '@gitroom/backend/api/routes/third-party.co
 import { MonitorController } from '@gitroom/backend/api/routes/monitor.controller';
 import { NoAuthIntegrationsController } from '@gitroom/backend/api/routes/no.auth.integrations.controller';
 import { EnterpriseController } from '@gitroom/backend/api/routes/enterprise.controller';
+import { ChatModule } from '@gitroom/nestjs-libraries/chat/chat.module';
 
 const authenticatedController = [
   UsersController,
@@ -51,7 +52,7 @@ const authenticatedController = [
   ThirdPartyController,
 ];
 @Module({
-  imports: [UploadModule],
+  imports: [UploadModule, ChatModule],
   controllers: [
     RootController,
     StripeController,

@@ -60,7 +60,6 @@ import { ioRedis } from '@gitroom/nestjs-libraries/redis/redis.service';
     PublicApiModule,
     AgentModule,
     ThrottlerModule,
-    ChatModule,
   ],
 })
 export class AppModule {}

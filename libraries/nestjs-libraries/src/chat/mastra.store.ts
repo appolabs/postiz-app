@@ -1,5 +1,12 @@
-import { PostgresStore, PgVector } from '@mastra/pg';
+let _pStore: any;
 
-export const pStore = new PostgresStore({
-  connectionString: process.env.DATABASE_URL,
-});
+export function getPStore() {
+  if (!_pStore) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { PostgresStore } = require('@mastra/pg');
+    _pStore = new PostgresStore({
+      connectionString: process.env.DATABASE_URL,
+    });
+  }
+  return _pStore;
+}
