@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** A stable, self-hosted social media scheduling server the team can rely on daily, with the ability to customize features as needs emerge.
-**Current focus:** Phase 2 — Calendar Platform Filtering
+**Current focus:** Phase 3 — Media Upload Limit
 
 ## Current Position
 
-Phase: 2 of 4 (Calendar Platform Filtering)
-Plan: 02-02 complete
-Status: Plan 02-02 executed — frontend platform filter UI added to calendar
-Last activity: 2026-02-28 — Plan 02-02 (SelectPlatform dropdown + filter state) complete
+Phase: 3 of 4 (Media Upload Limit)
+Plan: 03-01 complete
+Status: Plan 03-01 executed — upload limits raised to 100MB images, 10GB videos across all layers
+Last activity: 2026-02-28 — Plan 03-01 (backend, frontend, nginx upload limits) complete
 
-Progress: ███░░░░░░░ 30%
+Progress: ████████░░ 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3 min
-- Total execution time: 9 min
+- Total plans completed: 4
+- Average duration: 2.75 min
+- Total execution time: 11 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: ███░░░░░░░ 30%
 |-------|-------|-------|----------|
 | 01-deployment | 1/3 | 2 min | 2 min |
 | 02-calendar-platform-filtering | 2/? | 7 min | 3.5 min |
+| 03-media-upload-limit | 1/1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 02-01 (2 min), 02-02 (5 min)
+- Last 5 plans: 01-01 (2 min), 02-01 (2 min), 02-02 (5 min), 03-01 (2 min)
 - Trend: Consistent
 
 ## Accumulated Context
@@ -68,5 +69,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Plan 02-02 complete (frontend platform filter UI)
+Stopped at: Plan 03-01 complete (media upload limits)
 Resume file: None
