@@ -15,7 +15,7 @@ None
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [ ] **Phase 1: Deployment** - Single-container deploy to DO App Platform with embedded Temporal server and managed PostgreSQL
-- [ ] **Phase 2: Calendar Platform Filtering** - Add platform-based post filtering to calendar view
+- [x] **Phase 2: Calendar Platform Filtering** - Add platform-based post filtering to calendar view
 - [ ] **Phase 3: Media Upload Limit** - Increase media file upload size limit in the backend
 - [ ] **Phase 4: Production Readiness** - Monitoring, backups, team access, and smoke testing
 
@@ -40,8 +40,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Add platform filter parameter to posts API endpoint
-- [ ] 02-02: Add platform filter UI controls to calendar view
+- [x] 02-01: Add platform filter parameter to posts API endpoint
+- [x] 02-02: Add platform filter UI controls to calendar view
 
 ### Phase 3: Media Upload Limit
 **Goal**: Increased media file upload size limit in the backend
@@ -70,6 +70,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Deployment | 1/3 | In progress | - |
-| 2. Calendar Platform Filtering | 0/2 | Not started | - |
+| 2. Calendar Platform Filtering | 2/2 | Complete | 2026-02-28 |
 | 3. Media Upload Limit | 0/1 | Not started | - |
 | 4. Production Readiness | 0/1 | Not started | - |
