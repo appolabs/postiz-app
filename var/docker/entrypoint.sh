@@ -6,6 +6,7 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   echo "[entrypoint] Temporal embedded mode enabled"
 
   # Defaults consumed by auto-setup.sh (can be overridden via env)
+  export TEMPORAL_HOME=${TEMPORAL_HOME:-/etc/temporal}
   export DB=${DB:-postgres12}
   export POSTGRES_TLS_ENABLED=${POSTGRES_TLS_ENABLED:-true}
   export POSTGRES_TLS_DISABLE_HOST_VERIFICATION=${POSTGRES_TLS_DISABLE_HOST_VERIFICATION:-true}
