@@ -2,7 +2,7 @@
 
 ## Overview
 
-Deploy a self-hosted Postiz fork on DigitalOcean App Platform as a single container (app + embedded Temporal server via multi-stage build), add calendar platform filtering and increased media upload limits, then harden for daily production use.
+Deploy a self-hosted Postiz fork on DigitalOcean App Platform as a single container (app + embedded Temporal server via multi-stage build), add calendar platform filtering and increased media upload limits.
 
 ## Domain Expertise
 
@@ -17,7 +17,6 @@ None
 - [ ] **Phase 1: Deployment** - Single-container deploy to DO App Platform with embedded Temporal server and managed PostgreSQL
 - [x] **Phase 2: Calendar Platform Filtering** - Add platform-based post filtering to calendar view
 - [ ] **Phase 3: Media Upload Limit** - Increase media file upload size limit in the backend
-- [ ] **Phase 4: Production Readiness** - Monitoring, backups, team access, and smoke testing
 
 ## Phase Details
 
@@ -52,19 +51,10 @@ Plans:
 Plans:
 - [ ] 03-01: Find and increase media upload size limits
 
-### Phase 4: Production Readiness
-**Goal**: Production environment hardened for daily team use — monitoring, backups, access configured
-**Depends on**: Phases 2, 3
-**Research**: Unlikely (standard operational setup)
-**Plans**: TBD
-
-Plans:
-- [ ] 04-01: Configure backups, monitoring, and team access
-
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3
 (Phases 2 and 3 can run in parallel after Phase 1)
 
 | Phase | Plans Complete | Status | Completed |
@@ -72,4 +62,3 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Deployment | 1/3 | In progress | - |
 | 2. Calendar Platform Filtering | 2/2 | Complete | 2026-02-28 |
 | 3. Media Upload Limit | 0/1 | Not started | - |
-| 4. Production Readiness | 0/1 | Not started | - |
