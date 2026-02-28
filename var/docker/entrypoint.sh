@@ -17,6 +17,12 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   export SQL_TLS_ENABLED=${SQL_TLS_ENABLED:-true}
   export SQL_HOST_VERIFICATION=${SQL_HOST_VERIFICATION:-false}
 
+  # Connection limits (embedded shares PG with Postiz, keep pool small)
+  export SQL_MAX_CONNS=${SQL_MAX_CONNS:-5}
+  export SQL_MAX_IDLE_CONNS=${SQL_MAX_IDLE_CONNS:-5}
+  export SQL_VIS_MAX_CONNS=${SQL_VIS_MAX_CONNS:-2}
+  export SQL_VIS_MAX_IDLE_CONNS=${SQL_VIS_MAX_IDLE_CONNS:-2}
+
   # Network binding
   export BIND_ON_IP=${BIND_ON_IP:-127.0.0.1}
   export TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-127.0.0.1:7233}
