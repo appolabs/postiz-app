@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 1 of 4 (Deployment)
-Plan: Not started
-Status: Research complete, ready to plan
-Last activity: 2026-02-28 — Phase 1 research complete, roadmap updated
+Plan: 01-01 complete, 01-02 next
+Status: Plan 01-01 executed — Dockerfile.dev + entrypoint ready
+Last activity: 2026-02-28 — Plan 01-01 (Dockerfile + entrypoint) complete
 
-Progress: ░░░░░░░░░░ 0%
+Progress: █░░░░░░░░░ 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 2 min
+- Total execution time: 2 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| — | — | — | — |
+| 01-deployment | 1/3 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 01-01 (2 min)
+- Trend: Starting
 
 ## Accumulated Context
 
@@ -46,17 +46,19 @@ Recent decisions affecting current work:
 - Roadmap: No Elasticsearch (SQL-based visibility in PostgreSQL)
 - Roadmap: DO Managed PostgreSQL $15/mo (dev DB can't create additional databases)
 - Roadmap: App Platform builds from GitHub source on push
+- 01-01: TEMPORAL_EMBEDDED env var toggles embedded Temporal mode in entrypoint
+- 01-01: NEXT_PUBLIC_BACKEND_URL build arg added for DO App Platform (Next.js inlines at build time)
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None yet.
+None.
 
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Roadmap rewritten with simplified architecture
+Stopped at: Plan 01-01 complete (Dockerfile + entrypoint)
 Resume file: None

@@ -29,7 +29,7 @@ None
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Modify Dockerfile.dev — multi-stage build to embed Temporal server binaries and custom entrypoint
+- [x] 01-01: Modify Dockerfile.dev — multi-stage build to embed Temporal server binaries and custom entrypoint
 - [ ] 01-02: Create DO App Platform app spec and deploy with managed PostgreSQL
 - [ ] 01-03: Verify end-to-end functionality (app ↔ DB ↔ Temporal, post scheduling works)
 
@@ -69,7 +69,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Deployment | 0/3 | Not started | - |
+| 1. Deployment | 1/3 | In progress | - |
 | 2. Calendar Platform Filtering | 0/2 | Not started | - |
 | 3. Media Upload Limit | 0/1 | Not started | - |
 | 4. Production Readiness | 0/1 | Not started | - |
