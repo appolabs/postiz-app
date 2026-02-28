@@ -32,9 +32,9 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   echo "[entrypoint] Generating Temporal config..."
   dockerize -template /etc/temporal/config/config_template.yaml:/etc/temporal/config/docker.yaml
 
-  # 2. Run schema migration
+  # 2. Run schema migration (foreground — must finish before server starts)
   echo "[entrypoint] Running Temporal schema setup..."
-  /etc/temporal/auto-setup.sh &
+  /etc/temporal/auto-setup.sh
 
   # 3. Start temporal-server in background
   echo "[entrypoint] Starting Temporal server..."
