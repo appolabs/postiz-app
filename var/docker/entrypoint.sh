@@ -32,7 +32,7 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
 
   # 3. Start temporal-server in background
   echo "[entrypoint] Starting Temporal server..."
-  temporal-server --env docker start &
+  temporal-server --root /etc/temporal --env docker start &
 
   # 4. Wait for Temporal gRPC port (7233) — up to 120s
   echo "[entrypoint] Waiting for Temporal server on port 7233..."
