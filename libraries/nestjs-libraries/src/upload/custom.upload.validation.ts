@@ -36,9 +36,9 @@ export class CustomFileValidationPipe implements PipeTransform {
 
   private getMaxSize(mimeType: string): number {
     if (mimeType.startsWith('image/')) {
-      return 10 * 1024 * 1024; // 10 MB
+      return 100 * 1024 * 1024; // 100 MB
     } else if (mimeType.startsWith('video/')) {
-      return 1024 * 1024 * 1024; // 1 GB
+      return 10 * 1024 * 1024 * 1024; // 10 GB
     } else {
       throw new BadRequestException('Unsupported file type.');
     }
