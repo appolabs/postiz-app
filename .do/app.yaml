@@ -34,7 +34,7 @@ services:
         scope: BUILD_TIME
       # --- Database (DO managed PG binding) ---
       - key: DATABASE_URL
-        value: "${db.DATABASE_URL}"
+        value: "${db.DATABASE_URL}?sslmode=no-verify"
       # --- Temporal (embedded mode) ---
       - key: TEMPORAL_EMBEDDED
         value: "true"
