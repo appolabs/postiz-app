@@ -4,8 +4,8 @@ region: nyc
 databases:
   - engine: PG
     name: db
+    production: true
     version: "16"
-    production: true  # Dev DB can't CREATEDB; Temporal needs 3 databases
 
 services:
   - name: postiz
@@ -50,3 +50,12 @@ services:
       - key: POSTGRES_PWD
         value: "${db.PASSWORD}"
         type: SECRET
+      # --- Temporal connection limits (managed PG has limited slots) ---
+      - key: SQL_MAX_CONNS
+        value: "5"
+      - key: SQL_MAX_IDLE_CONNS
+        value: "5"
+      - key: SQL_VIS_MAX_CONNS
+        value: "2"
+      - key: SQL_VIS_MAX_IDLE_CONNS
+        value: "2"
