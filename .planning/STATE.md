@@ -5,30 +5,30 @@
 See: .planning/PROJECT.md (updated 2026-02-28)
 
 **Core value:** A stable, self-hosted social media scheduling server the team can rely on daily, with the ability to customize features as needs emerge.
-**Current focus:** Phase 3 — Media Upload Limit
+**Current focus:** v1.1 Runtime Optimization — Phases 4-8
 
 ## Current Position
 
-Phase: 3 of 3 (Media Upload Limit)
-Plan: 03-01 complete
-Status: Plan 03-01 executed — upload limits raised to 100MB images, 10GB videos across all layers
-Last activity: 2026-02-28 — Plan 03-01 (backend, frontend, nginx upload limits) complete
+Phase: 4 of 8 (PM2 Memory Guardrails)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-02-28 — Milestone v1.1 created
 
-Progress: ████████░░ 83%
+Progress: ███░░░░░░░ 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 2.75 min
-- Total execution time: 11 min
+- Total plans completed: 5
+- Average duration: 2.6 min
+- Total execution time: 13 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-deployment | 1/3 | 2 min | 2 min |
-| 02-calendar-platform-filtering | 2/? | 7 min | 3.5 min |
+| 02-calendar-platform-filtering | 2/2 | 7 min | 3.5 min |
 | 03-media-upload-limit | 1/1 | 2 min | 2 min |
 
 **Recent Trend:**
@@ -66,8 +66,12 @@ None.
 
 None.
 
+### Roadmap Evolution
+
+- Milestone v1.1 created: Runtime memory/CPU optimization, 5 phases (Phase 4-8)
+
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Plan 03-01 complete (media upload limits)
+Stopped at: Milestone v1.1 initialization
 Resume file: None
