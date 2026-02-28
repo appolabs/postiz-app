@@ -11,8 +11,8 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 
 Phase: 1 of 4 (Deployment)
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-28 — Roadmap rewritten (simplified to 4 phases)
+Status: Research complete, ready to plan
+Last activity: 2026-02-28 — Phase 1 research complete, roadmap updated
 
 Progress: ░░░░░░░░░░ 0%
 
@@ -41,9 +41,11 @@ Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
 - Roadmap: Single container on DO App Platform (no separate workers)
-- Roadmap: Temporalite instead of full Temporal (no Elasticsearch needed)
+- **Research: Temporalite deprecated (SQLite-only) → use full Temporal server embedded via multi-stage build from `temporalio/auto-setup:1.29.3`**
 - Roadmap: No Redis initially (in-memory MockRedis fallback)
-- Roadmap: DO Managed PostgreSQL for both app and Temporalite
+- Roadmap: No Elasticsearch (SQL-based visibility in PostgreSQL)
+- Roadmap: DO Managed PostgreSQL $15/mo (dev DB can't create additional databases)
+- Roadmap: App Platform builds from GitHub source on push
 
 ### Pending Todos
 

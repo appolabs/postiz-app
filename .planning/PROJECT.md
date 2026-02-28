@@ -58,9 +58,12 @@ A stable, self-hosted social media scheduling server the team can rely on daily,
 | Calendar filtering as first feature | Direct team need, well-scoped | — Pending |
 | Manual deploys initially | Reduce setup overhead, CI/CD can come later | — Pending |
 | DO App Platform, single container | Minimize cost, existing Dockerfile runs all apps via pm2 | Decided |
-| Temporalite instead of full Temporal | No Elasticsearch needed, lighter resource usage, single Go binary | Decided |
+| ~~Temporalite instead of full Temporal~~ | ~~No Elasticsearch needed, lighter resource usage~~ | **Superseded** — Temporalite deprecated (SQLite-only) |
+| Full Temporal server embedded via multi-stage build | Temporalite is deprecated/SQLite-only. COPY binaries from `temporalio/auto-setup:1.29.3` into our image. | Decided |
 | No Redis initially | Built-in MockRedis fallback exists, acceptable for internal team | Decided |
-| DO Managed PostgreSQL | Shared by app + Temporalite, handles backups/maintenance | Decided |
+| DO Managed PostgreSQL ($15/mo) | Shared by app + Temporal (3 DBs). Dev DB ($7/mo) can't create additional databases. | Decided |
+| No Elasticsearch | SQL-based visibility in PostgreSQL sufficient for 1 user | Decided |
+| App Platform builds from GitHub source | Auto-build on push to main, uses our Dockerfile.dev | Decided |
 
 ---
-*Last updated: 2026-02-28 after roadmap revision*
+*Last updated: 2026-02-28 after phase 1 research*

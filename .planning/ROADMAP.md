@@ -2,7 +2,7 @@
 
 ## Overview
 
-Deploy a self-hosted Postiz instance on DigitalOcean App Platform as a single container (app + Temporalite), add calendar platform filtering and increased media upload limits, then harden for daily production use.
+Deploy a self-hosted Postiz fork on DigitalOcean App Platform as a single container (app + embedded Temporal server via multi-stage build), add calendar platform filtering and increased media upload limits, then harden for daily production use.
 
 ## Domain Expertise
 
@@ -14,7 +14,7 @@ None
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Deployment** - Single-container deploy to DO App Platform with Temporalite and managed PostgreSQL
+- [ ] **Phase 1: Deployment** - Single-container deploy to DO App Platform with embedded Temporal server and managed PostgreSQL
 - [ ] **Phase 2: Calendar Platform Filtering** - Add platform-based post filtering to calendar view
 - [ ] **Phase 3: Media Upload Limit** - Increase media file upload size limit in the backend
 - [ ] **Phase 4: Production Readiness** - Monitoring, backups, team access, and smoke testing
@@ -22,16 +22,16 @@ None
 ## Phase Details
 
 ### Phase 1: Deployment
-**Goal**: Postiz running on DO App Platform — single container with backend, frontend, orchestrator, and Temporalite, backed by DO Managed PostgreSQL. No Redis (in-memory fallback). No Elasticsearch.
+**Goal**: Our Postiz fork running on DO App Platform — single container with backend, frontend, orchestrator, and embedded Temporal server (via multi-stage Docker build from `temporalio/auto-setup:1.29.3`), backed by DO Managed PostgreSQL. No Redis (in-memory MockRedis fallback). No Elasticsearch (SQL-based visibility). App Platform builds from our GitHub repo on push to `main`.
 **Depends on**: Nothing (first phase)
-**Research**: Likely (Temporalite integration, DO App Platform configuration)
-**Research topics**: Temporalite binary integration into existing Docker image, Temporalite PostgreSQL backend config, DO App Platform container deployment, app spec configuration
+**Research**: Done — see `.planning/phases/01-deployment/01-RESEARCH.md`
+**Key findings**: Temporalite is deprecated (SQLite-only). Full Temporal server required for PostgreSQL. Multi-stage build copies `temporal-server`, `temporal-sql-tool`, schema files from official image. Custom entrypoint runs schema setup then starts all processes via pm2.
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Add Temporalite to Docker image and entrypoint (pm2 process alongside existing apps)
-- [ ] 01-02: Configure DO App Platform spec and managed PostgreSQL, deploy
-- [ ] 01-03: Verify end-to-end functionality (app ↔ DB ↔ Temporalite, post scheduling works)
+- [ ] 01-01: Modify Dockerfile.dev — multi-stage build to embed Temporal server binaries and custom entrypoint
+- [ ] 01-02: Create DO App Platform app spec and deploy with managed PostgreSQL
+- [ ] 01-03: Verify end-to-end functionality (app ↔ DB ↔ Temporal, post scheduling works)
 
 ### Phase 2: Calendar Platform Filtering
 **Goal**: Users can filter calendar posts by social platform (e.g., show only X posts, only LinkedIn posts)
