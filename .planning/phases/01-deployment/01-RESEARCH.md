@@ -11,9 +11,11 @@ Researched the deployment architecture for running Postiz on DigitalOcean App Pl
 
 Key finding: **Temporalite is deprecated and SQLite-only.** It was absorbed into the Temporal CLI (`temporal server start-dev`) which is also SQLite-only and not for production. For PostgreSQL-backed production deployments, the full Temporal server (`temporalio/auto-setup` or `temporalio/server`) is required.
 
-The recommended architecture is a **two-service App Platform app**: one service for Postiz (backend + frontend + orchestrator via pm2/nginx, using the existing `Dockerfile.dev`), and a second internal service for Temporal server (using `temporalio/auto-setup` image). Both connect to a shared DO Managed PostgreSQL cluster hosting separate databases (`postiz` and `temporal` + `temporal_visibility`). App Platform's internal networking supports TCP/gRPC on `internal_ports`, so the Postiz orchestrator connects to Temporal at `http://temporal:7233` over the app's LAN.
+Since this is a custom fork with our own features, we **build our own image** from `Dockerfile.dev` and push to GHCR under our org (or DO Container Registry). `NEXT_PUBLIC_*` vars get baked in at build time, so we control them in CI or the Dockerfile build args.
 
-**Primary recommendation:** Two-service DO App Platform app + shared managed PostgreSQL cluster. No Redis (existing MockRedis fallback). No Elasticsearch (SQL-based visibility).
+The recommended architecture is a **two-service App Platform app**: one service for our custom Postiz image (backend + frontend + orchestrator via pm2/nginx, built from our fork's `Dockerfile.dev`), and a second internal service for Temporal server (using `temporalio/auto-setup` image). Both connect to a shared DO Managed PostgreSQL cluster hosting separate databases (`postiz` and `temporal` + `temporal_visibility`). App Platform's internal networking supports TCP/gRPC on `internal_ports`, so the Postiz orchestrator connects to Temporal at `http://temporal:7233` over the app's LAN.
+
+**Primary recommendation:** Build custom image from fork → push to registry → two-service DO App Platform app + shared managed PostgreSQL. No Redis (existing MockRedis fallback). No Elasticsearch (SQL-based visibility).
 </research_summary>
 
 <standard_stack>
@@ -25,7 +27,7 @@ The recommended architecture is a **two-service App Platform app**: one service 
 | DO App Platform | — | PaaS hosting | Managed container deployment, auto-TLS, health checks |
 | `temporalio/auto-setup` | 1.29.3 | Temporal server | Auto-provisions DB schema on first boot, runs all 4 services in one process |
 | DO Managed PostgreSQL | 16 | Persistence | Managed backups, maintenance, shared by app + Temporal |
-| `ghcr.io/gitroomhq/postiz-app` | latest | Postiz app | Existing production image (backend + frontend + orchestrator via pm2 + nginx) |
+| Custom image from fork | built from `Dockerfile.dev` | Postiz app | Our fork with custom features, built and pushed to GHCR or DOCR |
 
 ### Supporting
 | Component | Purpose | When to Use |
@@ -50,7 +52,7 @@ The recommended architecture is a **two-service App Platform app**: one service 
 ```
 DO App Platform App
 ├── Service: postiz (web service, public HTTP)
-│   ├── Image: ghcr.io/gitroomhq/postiz-app:latest
+│   ├── Image: ghcr.io/appolabs/postiz-app:latest (built from our fork)
 │   ├── HTTP port: 5000 (nginx → backend:3000 + frontend:4200)
 │   ├── Internal: pm2 runs backend, frontend, orchestrator
 │   ├── Env: DATABASE_URL, TEMPORAL_ADDRESS=temporal:7233
@@ -106,20 +108,29 @@ services:
         value: "true"
 ```
 
-### Pattern 2: Postiz App Using Existing Image
-**What:** Deploy the existing `ghcr.io/gitroomhq/postiz-app` image as-is — it already runs backend, frontend, and orchestrator via pm2+nginx.
-**When to use:** For the initial deployment.
+### Pattern 2: Custom Fork Image Build & Deploy
+**What:** Build from our fork's `Dockerfile.dev`, push to GHCR (or DOCR), deploy to App Platform. Since we control the build, `NEXT_PUBLIC_*` vars are set via `--build-arg` at build time.
+**When to use:** Always — we have custom features to deploy.
+
+**Build options:**
+- **Option A: GitHub Actions CI** — build on push to `main`, push to `ghcr.io/appolabs/postiz-app`. App Platform pulls from GHCR with `deploy_on_push`.
+- **Option B: App Platform builds from source** — point App Platform at the GitHub repo, it builds using `Dockerfile.dev` directly. Simpler but slower builds (1hr timeout, 4 CPU / 10 GiB RAM build resources).
+- **Option C: Manual build & push** — `docker build` locally, push to DOCR or GHCR, update app spec tag.
+
+**Recommended: Option B (App Platform source build)** for initial simplicity. Switch to Option A when CI/CD is desired.
 
 ```yaml
+# Option B: Build from source (App Platform builds the image)
 services:
   - name: postiz
-    image:
-      registry_type: GHCR
-      registry: gitroomhq
-      repository: postiz-app
-      tag: latest
+    github:
+      repo: appolabs/postiz-app
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile.dev
+    build_command: ""  # Dockerfile handles everything
     http_port: 5000
-    instance_size_slug: apps-s-2vcpu-4gb
+    instance_size_slug: apps-s-1vcpu-2gb
     instance_count: 1
     envs:
       - key: DATABASE_URL
@@ -128,7 +139,32 @@ services:
         value: "temporal:7233"
       - key: IS_GENERAL
         value: "true"
+      # NEXT_PUBLIC_* vars set as build-time env vars
+      - key: NEXT_PUBLIC_BACKEND_URL
+        value: "${APP_URL}/api"
+        scope: BUILD_TIME
       # ... social API keys, JWT_SECRET, etc.
+
+# Option A: Pre-built image from GHCR
+services:
+  - name: postiz
+    image:
+      registry_type: GHCR
+      registry: appolabs
+      repository: postiz-app
+      tag: latest
+      deploy_on_push:
+        enabled: true
+    http_port: 5000
+    instance_size_slug: apps-s-1vcpu-2gb
+    instance_count: 1
+    envs:
+      - key: DATABASE_URL
+        value: "${db.DATABASE_URL}"
+      - key: TEMPORAL_ADDRESS
+        value: "temporal:7233"
+      - key: IS_GENERAL
+        value: "true"
 ```
 
 ### Pattern 3: Shared PostgreSQL Cluster
@@ -155,7 +191,7 @@ services:
 | Temporal config YAML | Hand-written config files | `auto-setup` env vars | Environment variables are simpler and sufficient for single-node deployment |
 | Database backups | Custom backup scripts | DO Managed PostgreSQL | Managed DB includes automatic daily backups with 7-day retention |
 
-**Key insight:** The existing `Dockerfile.dev` and `temporalio/auto-setup` images already solve the hard problems. The deployment task is primarily app spec configuration, not custom Docker work.
+**Key insight:** The existing `Dockerfile.dev` and `temporalio/auto-setup` images already solve the hard problems. The deployment task is primarily app spec configuration and ensuring the build works on App Platform — not custom Docker work.
 </dont_hand_roll>
 
 <common_pitfalls>
@@ -213,12 +249,13 @@ databases:
     production: false  # Use dev DB ($7/mo) initially, upgrade to production ($15/mo) when ready
 
 services:
+  # Option B: Build from source (recommended for initial deploy)
   - name: postiz
-    image:
-      registry_type: GHCR
-      registry: gitroomhq
-      repository: postiz-app
-      tag: latest
+    github:
+      repo: appolabs/postiz-app
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: Dockerfile.dev
     http_port: 5000
     instance_size_slug: apps-s-1vcpu-2gb
     instance_count: 1
@@ -235,6 +272,7 @@ services:
         value: "${APP_URL}"
       - key: NEXT_PUBLIC_BACKEND_URL
         value: "${APP_URL}/api"
+        scope: BUILD_TIME
       - key: JWT_SECRET
         value: "CHANGE_ME_RANDOM_STRING"
         type: SECRET
@@ -355,25 +393,25 @@ TEMPORAL_ADDRESS=0.0.0.0:7233   # Listen on all interfaces for internal_ports
    - What's unclear: Whether `auto-setup` can create additional databases on a dev DB cluster (dev clusters may restrict `CREATEDB`).
    - Recommendation: Start with managed PostgreSQL ($15/mo) which allows multiple databases. If budget is tight, test dev DB first.
 
-2. **GHCR image pull authentication**
-   - What we know: The Postiz image at `ghcr.io/gitroomhq/postiz-app` appears to be public. App Platform supports GHCR.
-   - What's unclear: Whether DO App Platform needs credentials for GHCR pulls (even public images sometimes need auth for rate limits).
-   - Recommendation: Test with public pull first. If rate-limited, add `registry_credentials` to app spec.
+2. **Build time vs build resources**
+   - What we know: App Platform provides 4 CPU, 10 GiB RAM, 24 GiB disk for builds with 1hr timeout. The Postiz build needs `NODE_OPTIONS="--max-old-space-size=4096"` (already set in Dockerfile.dev).
+   - What's unclear: Whether the build completes within the 1hr timeout on App Platform's build infrastructure.
+   - Recommendation: Use App Platform source build (Option B) first. If builds timeout, switch to GitHub Actions CI (Option A) which has more generous limits.
 
 3. **Search attribute registration**
    - What we know: Postiz registers custom search attributes (`organizationId`, `postId`) on startup via `TemporalRegister`. Auto-setup can also register attributes.
    - What's unclear: Whether `SKIP_ADD_CUSTOM_SEARCH_ATTRIBUTES=true` conflicts with the app's own attribute registration.
    - Recommendation: Set `SKIP_ADD_CUSTOM_SEARCH_ATTRIBUTES=true` on Temporal service, let the Postiz backend register its own attributes. The app code already handles this.
 
-4. **App Platform `${APP_URL}` availability**
-   - What we know: App spec supports `${APP_URL}` for the app's public URL.
-   - What's unclear: Whether this resolves correctly during build time vs runtime for `NEXT_PUBLIC_BACKEND_URL`.
-   - Recommendation: May need to hardcode the URL or set it after first deployment. `NEXT_PUBLIC_*` vars are baked in at build time in Next.js — since we're deploying a pre-built image, this may need to be set as a runtime env var override.
+4. **`NEXT_PUBLIC_BACKEND_URL` and `${APP_URL}` at build time**
+   - What we know: Next.js `NEXT_PUBLIC_*` vars are baked in at build time. Since we build from source on App Platform, we can set them with `scope: BUILD_TIME`. App spec supports `${APP_URL}` for the app's public URL.
+   - What's unclear: Whether `${APP_URL}` resolves during the build phase (before the app has a URL assigned). First deploy may not have a URL yet.
+   - Recommendation: For first deploy, hardcode the URL or use a placeholder, then rebuild after the URL is assigned. Subsequent builds will have `${APP_URL}` available.
 
-5. **`NEXT_PUBLIC_BACKEND_URL` at runtime**
-   - What we know: Next.js `NEXT_PUBLIC_*` vars are normally compile-time. The Postiz image is pre-built.
-   - What's unclear: Whether the Postiz image has a mechanism to override `NEXT_PUBLIC_BACKEND_URL` at runtime.
-   - Recommendation: Check the image's entrypoint/nginx config for runtime env injection. May need a custom image or runtime script.
+5. **GitHub repo access for App Platform source builds**
+   - What we know: App Platform can build from GitHub repos. Requires GitHub app installation for the repo.
+   - What's unclear: Whether the `appolabs/postiz-app` repo has the DO GitHub app installed.
+   - Recommendation: Install the DigitalOcean GitHub app on the repo before creating the app. Alternatively, use GHCR image deployment if GitHub integration is problematic.
 </open_questions>
 
 <sources>
@@ -397,8 +435,9 @@ TEMPORAL_ADDRESS=0.0.0.0:7233   # Listen on all interfaces for internal_ports
 
 ### Tertiary (LOW confidence - needs validation)
 - Dev database `CREATEDB` privileges — needs testing during deployment
-- GHCR public image pull behavior on App Platform — needs testing
-- `NEXT_PUBLIC_*` runtime override in pre-built Postiz image — needs codebase investigation
+- App Platform build time for Postiz monorepo — needs testing (1hr timeout)
+- `${APP_URL}` availability during build phase — needs testing on first deploy
+- GitHub app installation for source builds — needs verification
 </sources>
 
 <metadata>
