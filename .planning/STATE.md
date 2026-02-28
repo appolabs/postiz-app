@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-28)
 ## Current Position
 
 Phase: 2 of 4 (Calendar Platform Filtering)
-Plan: 02-01 complete, 02-02 next
-Status: Plan 02-01 executed — backend platform filter API ready
-Last activity: 2026-02-28 — Plan 02-01 (backend platform filter) complete
+Plan: 02-02 complete
+Status: Plan 02-02 executed — frontend platform filter UI added to calendar
+Last activity: 2026-02-28 — Plan 02-02 (SelectPlatform dropdown + filter state) complete
 
-Progress: ██░░░░░░░░ 20%
+Progress: ███░░░░░░░ 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 2 min
-- Total execution time: 4 min
+- Total plans completed: 3
+- Average duration: 3 min
+- Total execution time: 9 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-deployment | 1/3 | 2 min | 2 min |
-| 02-calendar-platform-filtering | 1/? | 2 min | 2 min |
+| 02-calendar-platform-filtering | 2/? | 7 min | 3.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (2 min), 02-01 (2 min)
+- Last 5 plans: 01-01 (2 min), 02-01 (2 min), 02-02 (5 min)
 - Trend: Consistent
 
 ## Accumulated Context
@@ -51,6 +51,9 @@ Recent decisions affecting current work:
 - 01-01: NEXT_PUBLIC_BACKEND_URL build arg added for DO App Platform (Next.js inlines at build time)
 - 02-01: Merged Prisma integration relation filters into single object to avoid spread overwrite bug
 - 02-01: Platform filter uses integration.providerIdentifier field (already indexed)
+- 02-02: Used identifier field to deduplicate platforms (multiple integrations share same platform)
+- 02-02: Filter icon (funnel SVG) distinguishes platform filter from customer filter (user icon)
+- 02-02: Platform filter only renders when 2+ unique platforms exist
 
 ### Pending Todos
 
@@ -63,5 +66,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Plan 02-01 complete (backend platform filter API)
+Stopped at: Plan 02-02 complete (frontend platform filter UI)
 Resume file: None
