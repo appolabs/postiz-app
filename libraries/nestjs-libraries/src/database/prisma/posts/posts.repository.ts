@@ -153,16 +153,11 @@ export class PostsRepository {
         ],
         integration: {
           deletedAt: null,
+          ...(query.customer ? { customerId: query.customer } : {}),
+          ...(query.platform ? { providerIdentifier: query.platform } : {}),
         },
         deletedAt: null,
         parentPostId: null,
-        ...(query.customer
-          ? {
-              integration: {
-                customerId: query.customer,
-              },
-            }
-          : {}),
       },
       select: {
         id: true,
@@ -235,10 +230,11 @@ export class PostsRepository {
       deletedAt: null as Date | null,
       parentPostId: null as string | null,
       intervalInDays: null as number | null,
-      ...(query.customer
+      ...(query.customer || query.platform
         ? {
             integration: {
-              customerId: query.customer,
+              ...(query.customer ? { customerId: query.customer } : {}),
+              ...(query.platform ? { providerIdentifier: query.platform } : {}),
             },
           }
         : {}),
