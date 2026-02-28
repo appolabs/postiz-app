@@ -33,6 +33,7 @@ RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm run build
 COPY --from=temporal /usr/local/bin/temporal /usr/local/bin/
 COPY --from=temporal /usr/local/bin/temporal-server /usr/local/bin/
 COPY --from=temporal /usr/local/bin/temporal-sql-tool /usr/local/bin/
+COPY --from=temporal /usr/local/bin/dockerize /usr/local/bin/
 COPY --from=temporal /etc/temporal/ /etc/temporal/
 
 COPY var/docker/entrypoint.sh /app/entrypoint.sh

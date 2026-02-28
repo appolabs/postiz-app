@@ -5,7 +5,7 @@ set -e
 if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   echo "[entrypoint] Temporal embedded mode enabled"
 
-  # Defaults consumed by auto-setup.sh (can be overridden via env)
+  # Defaults for auto-setup.sh (schema migration tool)
   export TEMPORAL_HOME=${TEMPORAL_HOME:-/etc/temporal}
   export DB=${DB:-postgres12}
   export POSTGRES_TLS_ENABLED=${POSTGRES_TLS_ENABLED:-true}
@@ -13,13 +13,28 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   export ENABLE_ES=${ENABLE_ES:-false}
   export SKIP_ADD_CUSTOM_SEARCH_ATTRIBUTES=${SKIP_ADD_CUSTOM_SEARCH_ATTRIBUTES:-true}
 
-  # auto-setup.sh creates temporal + temporal_visibility databases,
-  # applies schema migrations, then starts temporal-server (blocking).
-  # We background it so we can continue to start Postiz after it's ready.
-  echo "[entrypoint] Running Temporal auto-setup..."
+  # Defaults for temporal-server runtime config template (uses SQL_TLS_*, not POSTGRES_TLS_*)
+  export SQL_TLS_ENABLED=${SQL_TLS_ENABLED:-true}
+  export SQL_HOST_VERIFICATION=${SQL_HOST_VERIFICATION:-false}
+
+  # Network binding
+  export BIND_ON_IP=${BIND_ON_IP:-127.0.0.1}
+  export TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-127.0.0.1:7233}
+  export TEMPORAL_CLI_ADDRESS=${TEMPORAL_CLI_ADDRESS:-${TEMPORAL_ADDRESS}}
+
+  # 1. Generate config from template
+  echo "[entrypoint] Generating Temporal config..."
+  dockerize -template /etc/temporal/config/config_template.yaml:/etc/temporal/config/docker.yaml
+
+  # 2. Run schema migration
+  echo "[entrypoint] Running Temporal schema setup..."
   /etc/temporal/auto-setup.sh &
 
-  # Wait for Temporal gRPC port (7233) -- up to 120s
+  # 3. Start temporal-server in background
+  echo "[entrypoint] Starting Temporal server..."
+  temporal-server --env docker start &
+
+  # 4. Wait for Temporal gRPC port (7233) — up to 120s
   echo "[entrypoint] Waiting for Temporal server on port 7233..."
   for i in $(seq 1 60); do
     if bash -c "echo > /dev/tcp/localhost/7233" 2>/dev/null; then
