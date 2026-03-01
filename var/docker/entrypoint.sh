@@ -36,9 +36,9 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   #    Must kill connections across ALL databases (app + temporal + temporal_visibility).
   if [ -n "${DATABASE_URL}" ]; then
     echo "[entrypoint] Terminating stale PG connections..."
-    node -e "
+    NODE_TLS_REJECT_UNAUTHORIZED=0 node -e "
       const { Client } = require('pg');
-      const c = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+      const c = new Client({ connectionString: process.env.DATABASE_URL });
       c.connect()
         .then(() => c.query(
           'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid()'
