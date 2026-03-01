@@ -37,7 +37,7 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
     echo "[entrypoint] Terminating stale PG connections..."
     node -e "
       const { Client } = require('pg');
-      const c = new Client({ connectionString: process.env.DATABASE_URL });
+      const c = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
       c.connect()
         .then(() => c.query(
           'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid()'
