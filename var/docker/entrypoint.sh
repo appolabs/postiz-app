@@ -17,11 +17,12 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   export SQL_TLS_ENABLED=${SQL_TLS_ENABLED:-true}
   export SQL_HOST_VERIFICATION=${SQL_HOST_VERIFICATION:-false}
 
-  # Connection limits — DO Managed PG (1GB) has max_connections=25.
-  # Temporal opens pools per service (frontend, matching, history, worker),
-  # so total = 4 services × (max_conns + vis_max_conns). Keep very low.
-  export SQL_MAX_CONNS=${SQL_MAX_CONNS:-2}
-  export SQL_MAX_IDLE_CONNS=${SQL_MAX_IDLE_CONNS:-2}
+  # Connection limits — DO Managed PG has max_connections=25.
+  # During rolling deploys, two containers overlap briefly.
+  # Each container must use ≤12 connections so 2 × 12 = 24 < 25.
+  # Temporal: 4 services × (1 + 1) = 8 connections.
+  export SQL_MAX_CONNS=${SQL_MAX_CONNS:-1}
+  export SQL_MAX_IDLE_CONNS=${SQL_MAX_IDLE_CONNS:-1}
   export SQL_VIS_MAX_CONNS=${SQL_VIS_MAX_CONNS:-1}
   export SQL_VIS_MAX_IDLE_CONNS=${SQL_VIS_MAX_IDLE_CONNS:-1}
 
@@ -82,10 +83,10 @@ fi
 # Cap Node heap per process (3 Node processes share RAM with Temporal)
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=384}"
 
-# Limit Prisma connection pool per process (3 processes × 2 = 6 connections).
-# Temporal uses 12, so total = 18 out of 25 available.
+# Limit Prisma connection pool per process (3 processes × 1 = 3 connections).
+# Temporal uses 8, so total per container = 11. Two containers during deploy = 22 < 25.
 if [ -n "${DATABASE_URL}" ] && ! echo "${DATABASE_URL}" | grep -q "connection_limit"; then
-  export DATABASE_URL="${DATABASE_URL}$(echo "${DATABASE_URL}" | grep -q '?' && echo '&' || echo '?')connection_limit=2"
+  export DATABASE_URL="${DATABASE_URL}$(echo "${DATABASE_URL}" | grep -q '?' && echo '&' || echo '?')connection_limit=1"
 fi
 
 echo "[entrypoint] Starting nginx and Postiz..."
