@@ -30,8 +30,9 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   export TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-127.0.0.1:7233}
   export TEMPORAL_CLI_ADDRESS=${TEMPORAL_CLI_ADDRESS:-${TEMPORAL_ADDRESS}}
 
-  # 0. Terminate stale PG connections from previous container (rolling deploy)
+  # 0. Terminate ALL stale PG connections from previous container (rolling deploy)
   #    DO Managed PG has only 25 slots; old container holds connections until killed.
+  #    Must kill connections across ALL databases (app + temporal + temporal_visibility).
   if [ -n "${DATABASE_URL}" ]; then
     echo "[entrypoint] Terminating stale PG connections..."
     node -e "
@@ -39,9 +40,9 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
       const c = new Client({ connectionString: process.env.DATABASE_URL });
       c.connect()
         .then(() => c.query(
-          'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid()'
+          'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid()'
         ))
-        .then(r => { console.log('[entrypoint] Terminated', r.rowCount, 'stale connections'); return c.end(); })
+        .then(r => { console.log('[entrypoint] Terminated', r.rowCount, 'connections across all databases'); return c.end(); })
         .catch(e => { console.warn('[entrypoint] WARN: could not clear connections:', e.message); process.exit(0); });
     " || true
   fi
