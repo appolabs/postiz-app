@@ -41,7 +41,7 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
       const c = new Client({ connectionString: process.env.DATABASE_URL });
       c.connect()
         .then(() => c.query(
-          'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid()'
+          'SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid <> pg_backend_pid() AND usename = current_user'
         ))
         .then(r => { console.log('[entrypoint] Terminated', r.rowCount, 'connections across all databases'); return c.end(); })
         .catch(e => { console.warn('[entrypoint] WARN: could not clear connections:', e.message); process.exit(0); });
