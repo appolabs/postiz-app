@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'backend',
       script: 'node',
-      args: '--experimental-require-module ./dist/apps/backend/src/main.js',
+      args: '--experimental-require-module ./dist/backend/apps/backend/src/main.js',
       max_memory_restart: '350M',
       env: {
         PORT: 3000,
@@ -12,7 +12,7 @@ module.exports = {
     {
       name: 'orchestrator',
       script: 'node',
-      args: '--experimental-require-module ./dist/apps/orchestrator/src/main.js',
+      args: '--experimental-require-module ./dist/orchestrator/apps/orchestrator/src/main.js',
       max_memory_restart: '350M',
     },
     {
