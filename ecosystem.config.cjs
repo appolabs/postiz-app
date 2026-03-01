@@ -15,7 +15,7 @@ module.exports = {
       script: 'node',
       args: '--experimental-require-module ./dist/apps/orchestrator/src/main.js',
       cwd: './apps/orchestrator',
-      max_memory_restart: '512M',
+      max_memory_restart: '768M',
     },
     {
       name: 'frontend',
