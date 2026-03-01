@@ -47,19 +47,23 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
     " || true
   fi
 
-  # 1. Generate config from template
+  # 1. Run Prisma schema push BEFORE Temporal starts (needs free PG slots)
+  echo "[entrypoint] Running Prisma schema push..."
+  pnpm run prisma-db-push || echo "[entrypoint] WARN: prisma-db-push failed (non-fatal)"
+
+  # 2. Generate config from template
   echo "[entrypoint] Generating Temporal config..."
   dockerize -template /etc/temporal/config/config_template.yaml:/etc/temporal/config/docker.yaml
 
-  # 2. Run schema migration (foreground — must finish before server starts)
+  # 3. Run schema migration (foreground — must finish before server starts)
   echo "[entrypoint] Running Temporal schema setup..."
   /etc/temporal/auto-setup.sh
 
-  # 3. Start temporal-server in background
+  # 4. Start temporal-server in background
   echo "[entrypoint] Starting Temporal server..."
   temporal-server --root /etc/temporal --env docker start &
 
-  # 4. Wait for Temporal gRPC port (7233) — up to 120s
+  # 5. Wait for Temporal gRPC port (7233) — up to 120s
   echo "[entrypoint] Waiting for Temporal server on port 7233..."
   for i in $(seq 1 60); do
     if bash -c "echo > /dev/tcp/localhost/7233" 2>/dev/null; then
@@ -77,6 +81,12 @@ fi
 # --- Start Postiz ---
 # Cap Node heap per process (3 Node processes share RAM with Temporal)
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=384}"
+
+# Limit Prisma connection pool per process (3 processes × 2 = 6 connections).
+# Temporal uses 12, so total = 18 out of 25 available.
+if [ -n "${DATABASE_URL}" ] && ! echo "${DATABASE_URL}" | grep -q "connection_limit"; then
+  export DATABASE_URL="${DATABASE_URL}$(echo "${DATABASE_URL}" | grep -q '?' && echo '&' || echo '?')connection_limit=2"
+fi
 
 echo "[entrypoint] Starting nginx and Postiz..."
 nginx && pnpm run pm2
