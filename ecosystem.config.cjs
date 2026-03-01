@@ -19,10 +19,14 @@ module.exports = {
     },
     {
       name: 'frontend',
-      script: './node_modules/.bin/next',
-      args: 'start -p 4200',
+      script: 'node',
+      args: '.next/standalone/apps/frontend/server.js',
       cwd: './apps/frontend',
       max_memory_restart: '512M',
+      env: {
+        PORT: 4200,
+        HOSTNAME: '0.0.0.0',
+      },
     },
   ],
 };
