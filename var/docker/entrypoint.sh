@@ -17,11 +17,13 @@ if [ "${TEMPORAL_EMBEDDED}" = "true" ]; then
   export SQL_TLS_ENABLED=${SQL_TLS_ENABLED:-true}
   export SQL_HOST_VERIFICATION=${SQL_HOST_VERIFICATION:-false}
 
-  # Connection limits (embedded shares PG with Postiz, keep pool small)
-  export SQL_MAX_CONNS=${SQL_MAX_CONNS:-5}
-  export SQL_MAX_IDLE_CONNS=${SQL_MAX_IDLE_CONNS:-5}
-  export SQL_VIS_MAX_CONNS=${SQL_VIS_MAX_CONNS:-2}
-  export SQL_VIS_MAX_IDLE_CONNS=${SQL_VIS_MAX_IDLE_CONNS:-2}
+  # Connection limits — DO Managed PG (1GB) has max_connections=25.
+  # Temporal opens pools per service (frontend, matching, history, worker),
+  # so total = 4 services × (max_conns + vis_max_conns). Keep very low.
+  export SQL_MAX_CONNS=${SQL_MAX_CONNS:-2}
+  export SQL_MAX_IDLE_CONNS=${SQL_MAX_IDLE_CONNS:-2}
+  export SQL_VIS_MAX_CONNS=${SQL_VIS_MAX_CONNS:-1}
+  export SQL_VIS_MAX_IDLE_CONNS=${SQL_VIS_MAX_IDLE_CONNS:-1}
 
   # Network binding
   export BIND_ON_IP=${BIND_ON_IP:-127.0.0.1}
